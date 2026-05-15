@@ -17,13 +17,12 @@
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: #f5f5f5;
-      overflow-x: hidden;
+      overflow: hidden;
       position: fixed;
       width: 100%;
       height: 100%;
     }
 
-    /* Pantalla principal */
     .app-container {
       display: flex;
       flex-direction: column;
@@ -33,7 +32,7 @@
       overflow: hidden;
     }
 
-    /* Header con menú hamburguesa */
+    /* Header */
     .header {
       background: linear-gradient(135deg, #2c3e50, #34495e);
       color: white;
@@ -57,6 +56,11 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      z-index: 2000;
+    }
+
+    .menu-btn:active {
+      transform: scale(0.95);
     }
 
     .header h1 {
@@ -69,6 +73,7 @@
       padding: 4px 8px;
       border-radius: 20px;
       font-size: 12px;
+      font-weight: bold;
     }
 
     /* Menú lateral */
@@ -79,9 +84,12 @@
       width: 100%;
       height: 100%;
       background: rgba(0,0,0,0.5);
-      z-index: 1000;
+      z-index: 999;
       display: none;
-      transition: 0.3s;
+    }
+
+    .menu-overlay.show {
+      display: block;
     }
 
     .menu-lateral {
@@ -91,18 +99,14 @@
       width: 280px;
       height: 100%;
       background: white;
-      z-index: 1001;
-      transition: 0.3s;
+      z-index: 1000;
+      transition: left 0.3s ease;
       box-shadow: 2px 0 8px rgba(0,0,0,0.2);
       overflow-y: auto;
     }
 
-    .menu-lateral.open {
+    .menu-lateral.show {
       left: 0;
-    }
-
-    .menu-overlay.open {
-      display: block;
     }
 
     .menu-header {
@@ -112,11 +116,20 @@
       text-align: center;
     }
 
+    .menu-header h3 {
+      margin: 0;
+      font-size: 20px;
+    }
+
     .menu-item {
-      padding: 16px;
+      padding: 16px 20px;
       border-bottom: 1px solid #eee;
       cursor: pointer;
-      transition: 0.2s;
+      transition: background 0.2s;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
     .menu-item:hover {
@@ -161,12 +174,17 @@
     }
 
     .category-chip {
-      padding: 6px 12px;
+      padding: 6px 16px;
       background: #ecf0f1;
       border-radius: 20px;
       white-space: nowrap;
       cursor: pointer;
       font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .category-chip:active {
+      transform: scale(0.95);
     }
 
     .category-chip.active {
@@ -179,6 +197,7 @@
       flex: 1;
       overflow-y: auto;
       padding: 16px;
+      padding-bottom: 320px;
     }
 
     .producto-card {
@@ -190,7 +209,8 @@
       justify-content: space-between;
       align-items: center;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      transition: 0.2s;
+      cursor: pointer;
+      transition: transform 0.1s;
     }
 
     .producto-card:active {
@@ -228,22 +248,42 @@
 
     /* Footer del carrito */
     .carrito-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
       background: white;
       border-top: 2px solid #e0e0e0;
       padding: 12px 16px;
       box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+      z-index: 100;
+      max-height: 320px;
+      overflow-y: auto;
     }
 
     .carrito-resumen {
       margin-bottom: 12px;
+      max-height: 150px;
+      overflow-y: auto;
     }
 
     .carrito-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 6px 0;
+      padding: 8px 0;
       font-size: 14px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .carrito-item button {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 4px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 12px;
     }
 
     .pago-options {
@@ -260,11 +300,12 @@
       font-size: 12px;
       color: #7f8c8d;
       display: block;
+      margin-bottom: 4px;
     }
 
     .pago-input input {
       width: 100%;
-      padding: 8px;
+      padding: 10px;
       border: 1px solid #ddd;
       border-radius: 8px;
       font-size: 14px;
@@ -277,6 +318,7 @@
       padding: 12px 0;
       border-top: 1px solid #e0e0e0;
       font-weight: bold;
+      font-size: 16px;
     }
 
     .btn-finalizar {
@@ -295,9 +337,17 @@
       transform: scale(0.98);
     }
 
-    /* Scroll suave */
+    /* Scrollbar */
     ::-webkit-scrollbar {
       width: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #888;
     }
   </style>
 </head>
@@ -314,7 +364,7 @@
   <div class="menu-overlay" id="menuOverlay"></div>
   <div class="menu-lateral" id="menuLateral">
     <div class="menu-header">
-      <h3>📋 Menú</h3>
+      <h3>📋 Menú Principal</h3>
     </div>
     <div class="menu-item" id="menuInventario">
       📦 Gestionar Inventario
@@ -355,7 +405,7 @@
       </div>
       <div class="pago-input">
         <label>💵 Efectivo</label>
-        <input type="number" id="efectivo" value="0" step="0.01" readonly>
+        <input type="number" id="efectivo" value="0" step="0.01" readonly style="background:#f5f5f5;">
       </div>
     </div>
     
@@ -425,6 +475,13 @@
     await tx.done;
   }
 
+  async function eliminarProductoDB(id) {
+    const db = await getDB();
+    const tx = db.transaction('inventario', 'readwrite');
+    await tx.objectStore('inventario').delete(id);
+    await tx.done;
+  }
+
   async function guardarVenta(venta) {
     const db = await getDB();
     const tx = db.transaction('ventas', 'readwrite');
@@ -432,12 +489,131 @@
     await tx.done;
   }
 
+  async function leerVentas() {
+    const db = await getDB();
+    const tx = db.transaction('ventas', 'readonly');
+    return await tx.objectStore('ventas').getAll();
+  }
+
   // ========== VARIABLES GLOBALES ==========
   let productos = [];
   let carrito = [];
   let categoriaActual = 'Todos';
 
-  // ========== RENDERIZAR PRODUCTOS ==========
+  // ========== MENÚ HAMBURGUESA (CORREGIDO) ==========
+  function toggleMenu() {
+    const menu = document.getElementById('menuLateral');
+    const overlay = document.getElementById('menuOverlay');
+    
+    if (menu.classList.contains('show')) {
+      menu.classList.remove('show');
+      overlay.classList.remove('show');
+    } else {
+      menu.classList.add('show');
+      overlay.classList.add('show');
+    }
+  }
+
+  // Event listeners con verificación de existencia
+  document.addEventListener('DOMContentLoaded', () => {
+    const menuBtn = document.getElementById('menuBtn');
+    const menuOverlay = document.getElementById('menuOverlay');
+    
+    if (menuBtn) {
+      menuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleMenu();
+      });
+    }
+    
+    if (menuOverlay) {
+      menuOverlay.addEventListener('click', toggleMenu);
+    }
+    
+    // Acciones del menú
+    document.getElementById('menuInventario').addEventListener('click', () => {
+      toggleMenu();
+      gestionInventario();
+    });
+    
+    document.getElementById('menuResguardo').addEventListener('click', async () => {
+      toggleMenu();
+      await resguardo();
+    });
+    
+    document.getElementById('menuRestaurar').addEventListener('click', () => {
+      toggleMenu();
+      restaurarInventario();
+    });
+    
+    document.getElementById('menuReportes').addEventListener('click', async () => {
+      toggleMenu();
+      await mostrarReportes();
+    });
+    
+    document.getElementById('menuInstalar').addEventListener('click', () => {
+      toggleMenu();
+      instalarApp();
+    });
+  });
+
+  // ========== FUNCIONES DEL MENÚ ==========
+  async function resguardo() {
+    const inventario = await leerInventario();
+    const ventas = await leerVentas();
+    const data = { 
+      inventario, 
+      ventas, 
+      exportado: new Date().toISOString(),
+      version: 'MercaditoV4'
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `resguardo_mercaditov4_${Date.now()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    alert('✅ Resguardo guardado en Downloads');
+  }
+
+  function restaurarInventario() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const text = await file.text();
+      const data = JSON.parse(text);
+      if (data.inventario && Array.isArray(data.inventario)) {
+        await guardarInventario(data.inventario);
+        await cargarProductos();
+        alert('✅ Inventario restaurado exitosamente');
+      } else {
+        alert('❌ Archivo inválido');
+      }
+    };
+    input.click();
+  }
+
+  async function mostrarReportes() {
+    const ventas = await leerVentas();
+    const totalVentas = ventas.reduce((sum, v) => sum + v.total, 0);
+    alert(`📊 REPORTES\n\n💰 Total General: $${totalVentas.toFixed(2)}\n📦 Total Ventas: ${ventas.length}\n🛒 Productos: ${productos.length}`);
+  }
+
+  function instalarApp() {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+    } else {
+      alert('📲 Para instalar: Abre el menú del navegador (⋮) → "Instalar aplicación"');
+    }
+  }
+
+  // ========== CARGAR Y RENDERIZAR PRODUCTOS ==========
   async function cargarProductos() {
     productos = await leerInventario();
     if (productos.length === 0) {
@@ -445,7 +621,9 @@
       productos = [
         { id: '1', nombre: 'Coca Cola', categoria: 'Bebidas', precio: 15, costo: 10, stock: 10 },
         { id: '2', nombre: 'Papas Fritas', categoria: 'Snacks', precio: 12, costo: 7, stock: 3 },
-        { id: '3', nombre: 'Sandwich', categoria: 'Comidas', precio: 35, costo: 20, stock: 5 }
+        { id: '3', nombre: 'Sandwich', categoria: 'Comidas', precio: 35, costo: 20, stock: 5 },
+        { id: '4', nombre: 'Agua Mineral', categoria: 'Bebidas', precio: 10, costo: 5, stock: 8 },
+        { id: '5', nombre: 'Galletas', categoria: 'Snacks', precio: 8, costo: 4, stock: 2 }
       ];
       await guardarInventario(productos);
     }
@@ -466,7 +644,14 @@
     }
     
     const container = document.getElementById('productosLista');
+    if (!container) return;
+    
     container.innerHTML = '';
+    
+    if (filtrados.length === 0) {
+      container.innerHTML = '<div style="text-align:center;padding:40px;color:#999;">📭 No hay productos</div>';
+      return;
+    }
     
     filtrados.forEach(prod => {
       const card = document.createElement('div');
@@ -486,15 +671,13 @@
       
       container.appendChild(card);
     });
-    
-    if (filtrados.length === 0) {
-      container.innerHTML = '<div style="text-align:center;padding:40px;">📭 No hay productos</div>';
-    }
   }
 
   function renderizarCategorias() {
     const categorias = ['Todos', ...new Set(productos.map(p => p.categoria))];
     const container = document.getElementById('categoryFilter');
+    if (!container) return;
+    
     container.innerHTML = categorias.map(cat => `
       <div class="category-chip ${cat === categoriaActual ? 'active' : ''}" data-cat="${cat}">
         ${cat}
@@ -510,7 +693,7 @@
     });
   }
 
-  // ========== CARRITO Y PAGO ==========
+  // ========== CARRITO ==========
   function agregarAlCarrito(prod) {
     if (prod.stock <= 0) {
       alert('⚠️ Producto sin stock');
@@ -539,7 +722,7 @@
     let total = 0;
     
     if (carrito.length === 0) {
-      container.innerHTML = '<div style="text-align:center;color:#999;">🛒 Carrito vacío</div>';
+      if (container) container.innerHTML = '<div style="text-align:center;color:#999;padding:8px;">🛒 Carrito vacío</div>';
       document.getElementById('carritoFooter').style.display = 'none';
       document.getElementById('cartCount').innerText = '0';
       return;
@@ -551,18 +734,20 @@
       total += subtotal;
       html += `
         <div class="carrito-item">
-          <span>${item.nombre} x${item.cantidad}</span>
+          <span><strong>${item.nombre}</strong> x${item.cantidad}</span>
           <span>$${subtotal.toFixed(2)}</span>
-          <button onclick="eliminarDelCarrito(${idx})" style="background:#e74c3c;color:white;border:none;padding:4px 8px;border-radius:12px;">🗑</button>
+          <button onclick="eliminarDelCarrito(${idx})">🗑</button>
         </div>
       `;
     });
     
-    container.innerHTML = html;
-    document.getElementById('totalPagar').innerText = `$${total.toFixed(2)}`;
-    document.getElementById('totalPagar').dataset.total = total;
+    if (container) container.innerHTML = html;
+    const totalPagarSpan = document.getElementById('totalPagar');
+    if (totalPagarSpan) {
+      totalPagarSpan.innerText = `$${total.toFixed(2)}`;
+      totalPagarSpan.dataset.total = total;
+    }
     
-    // Actualizar efectivo automático
     actualizarEfectivo();
   }
   
@@ -573,26 +758,31 @@
   };
   
   function actualizarEfectivo() {
-    const total = parseFloat(document.getElementById('totalPagar').dataset.total || 0);
-    const transferido = parseFloat(document.getElementById('transferido').value) || 0;
+    const totalSpan = document.getElementById('totalPagar');
+    const total = parseFloat(totalSpan?.dataset.total || 0);
+    const transferido = parseFloat(document.getElementById('transferido')?.value || 0);
     const efectivo = Math.max(0, total - transferido);
-    document.getElementById('efectivo').value = efectivo.toFixed(2);
+    const efectivoInput = document.getElementById('efectivo');
+    if (efectivoInput) efectivoInput.value = efectivo.toFixed(2);
   }
   
-  document.getElementById('transferido').oninput = actualizarEfectivo;
+  if (document.getElementById('transferido')) {
+    document.getElementById('transferido').oninput = actualizarEfectivo;
+  }
   
   async function finalizarVenta() {
     if (carrito.length === 0) {
-      alert('Carrito vacío');
+      alert('🛒 Carrito vacío');
       return;
     }
     
-    const total = parseFloat(document.getElementById('totalPagar').dataset.total);
-    const transferido = parseFloat(document.getElementById('transferido').value) || 0;
-    const efectivo = parseFloat(document.getElementById('efectivo').value) || 0;
+    const totalSpan = document.getElementById('totalPagar');
+    const total = parseFloat(totalSpan?.dataset.total || 0);
+    const transferido = parseFloat(document.getElementById('transferido')?.value || 0);
+    const efectivo = parseFloat(document.getElementById('efectivo')?.value || 0);
     
     if (Math.abs((transferido + efectivo) - total) > 0.01) {
-      alert(`Error: El total pagado ($${(transferido + efectivo).toFixed(2)}) no coincide con el total ($${total.toFixed(2)})`);
+      alert(`❌ Error: El total pagado ($${(transferido + efectivo).toFixed(2)}) no coincide con el total ($${total.toFixed(2)})`);
       return;
     }
     
@@ -607,7 +797,7 @@
     
     // Guardar venta
     const venta = {
-      items: carrito.map(i => ({ nombre: i.nombre, cantidad: i.cantidad, precio: i.precio })),
+      items: carrito.map(i => ({ id: i.id, nombre: i.nombre, cantidad: i.cantidad, precio: i.precio })),
       total: total,
       transferido: transferido,
       efectivo: efectivo,
@@ -620,125 +810,114 @@
     carrito = [];
     renderizarCarrito();
     await cargarProductos();
-    alert('✅ Venta completada');
-    document.getElementById('transferido').value = '0';
-  }
-  
-  document.getElementById('finalizarVentaBtn').onclick = finalizarVenta;
-
-  // ========== MENÚ HAMBURGUESA ==========
-  function toggleMenu() {
-    document.getElementById('menuLateral').classList.toggle('open');
-    document.getElementById('menuOverlay').classList.toggle('open');
-  }
-  
-  document.getElementById('menuBtn').onclick = toggleMenu;
-  document.getElementById('menuOverlay').onclick = toggleMenu;
-  
-  // Acciones del menú
-  document.getElementById('menuInventario').onclick = () => {
-    toggleMenu();
-    gestionInventario();
-  };
-  
-  document.getElementById('menuResguardo').onclick = async () => {
-    toggleMenu();
-    const data = { inventario: productos, ventas: [], exportado: new Date().toISOString() };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `resguardo_${Date.now()}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    alert('✅ Resguardo guardado');
-  };
-  
-  document.getElementById('menuRestaurar').onclick = () => {
-    toggleMenu();
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.json';
-    input.onchange = async (e) => {
-      const file = e.target.files[0];
-      const text = await file.text();
-      const data = JSON.parse(text);
-      if (data.inventario) {
-        await guardarInventario(data.inventario);
-        await cargarProductos();
-        alert('✅ Inventario restaurado');
-      }
-    };
-    input.click();
-  };
-  
-  document.getElementById('menuReportes').onclick = () => {
-    toggleMenu();
-    alert('📊 Reportes en desarrollo\nVentas totales: ' + carrito.length);
-  };
-  
-  document.getElementById('menuInstalar').onclick = () => {
-    toggleMenu();
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-    } else {
-      alert('📲 Usa el menú del navegador → "Instalar aplicación"');
-    }
-  };
-  
-  // ========== GESTIÓN DE INVENTARIO (Diálogo simple) ==========
-  function gestionInventario() {
-    let lista = '📦 INVENTARIO ACTUAL:\n\n';
-    productos.forEach((p, i) => {
-      lista += `${i+1}. ${p.nombre} - Stock: ${p.stock} - $${p.precio}\n`;
-    });
-    lista += '\n✏️ Opciones:\n1. Agregar producto\n2. Editar stock\n3. Eliminar producto';
+    alert('✅ Venta completada exitosamente');
     
-    const opcion = prompt(lista + '\n\nElige opción (1/2/3):');
+    if (document.getElementById('transferido')) document.getElementById('transferido').value = '0';
+  }
+  
+  if (document.getElementById('finalizarVentaBtn')) {
+    document.getElementById('finalizarVentaBtn').onclick = finalizarVenta;
+  }
+  
+  // ========== GESTIÓN DE INVENTARIO ==========
+  async function gestionInventario() {
+    let opcion = prompt(
+      '📦 GESTIÓN DE INVENTARIO\n\n' +
+      '1️⃣ Agregar producto\n' +
+      '2️⃣ Editar producto\n' +
+      '3️⃣ Eliminar producto\n' +
+      '4️⃣ Ver inventario\n\n' +
+      'Elige una opción (1-4):'
+    );
     
     if (opcion === '1') {
-      const nombre = prompt('Nombre del producto:');
+      const nombre = prompt('📝 Nombre del producto:');
       if (!nombre) return;
-      const categoria = prompt('Categoría:');
-      const precio = parseFloat(prompt('Precio:'));
-      const costo = parseFloat(prompt('Costo:'));
-      const stock = parseInt(prompt('Stock inicial:'));
+      const categoria = prompt('📂 Categoría:', 'General');
+      const precio = parseFloat(prompt('💰 Precio de venta:'));
+      const costo = parseFloat(prompt('💵 Costo del producto:', 0));
+      const stock = parseInt(prompt('📦 Stock inicial:', 0));
+      
+      if (isNaN(precio)) {
+        alert('❌ Precio inválido');
+        return;
+      }
       
       const nuevo = {
         id: Date.now().toString(),
-        nombre, categoria: categoria || 'General',
-        precio, costo: costo || 0, stock: stock || 0
+        nombre: nombre.trim(),
+        categoria: categoria || 'General',
+        precio: precio,
+        costo: costo || 0,
+        stock: stock || 0
       };
       
-      agregarProductoDB(nuevo).then(() => cargarProductos());
-      alert('✅ Producto agregado');
+      await agregarProductoDB(nuevo);
+      await cargarProductos();
+      alert(`✅ Producto "${nombre}" agregado`);
       
     } else if (opcion === '2') {
-      const id = prompt('ID del producto (1-' + productos.length + '):');
-      const idx = parseInt(id) - 1;
-      if (productos[idx]) {
-        const nuevoStock = parseInt(prompt('Nuevo stock:', productos[idx].stock));
-        productos[idx].stock = nuevoStock;
-        actualizarProductoDB(productos[idx]).then(() => cargarProductos());
-        alert('✅ Stock actualizado');
+      if (productos.length === 0) {
+        alert('📭 No hay productos para editar');
+        return;
+      }
+      
+      let lista = '📋 SELECCIONA PRODUCTO:\n\n';
+      productos.forEach((p, i) => {
+        lista += `${i+1}. ${p.nombre} - Stock: ${p.stock} - $${p.precio}\n`;
+      });
+      
+      const idx = parseInt(prompt(lista + '\n\nNúmero del producto:')) - 1;
+      if (idx >= 0 && idx < productos.length) {
+        const prod = productos[idx];
+        const nuevoStock = parseInt(prompt(`✏️ Nuevo stock para "${prod.nombre}":`, prod.stock));
+        if (!isNaN(nuevoStock)) {
+          prod.stock = nuevoStock;
+          await actualizarProductoDB(prod);
+          await cargarProductos();
+          alert('✅ Stock actualizado');
+        }
+      } else {
+        alert('❌ Número inválido');
       }
       
     } else if (opcion === '3') {
-      const id = prompt('ID del producto a eliminar (1-' + productos.length + '):');
-      const idx = parseInt(id) - 1;
-      if (productos[idx] && confirm(`¿Eliminar ${productos[idx].nombre}?`)) {
-        const db = await getDB();
-        const tx = db.transaction('inventario', 'readwrite');
-        await tx.objectStore('inventario').delete(productos[idx].id);
-        await tx.done;
-        await cargarProductos();
-        alert('✅ Producto eliminado');
+      if (productos.length === 0) {
+        alert('📭 No hay productos para eliminar');
+        return;
       }
+      
+      let lista = '🗑️ ELIMINAR PRODUCTO:\n\n';
+      productos.forEach((p, i) => {
+        lista += `${i+1}. ${p.nombre}\n`;
+      });
+      
+      const idx = parseInt(prompt(lista + '\n\nNúmero del producto a eliminar:')) - 1;
+      if (idx >= 0 && idx < productos.length) {
+        const prod = productos[idx];
+        if (confirm(`¿Eliminar "${prod.nombre}" permanentemente?`)) {
+          await eliminarProductoDB(prod.id);
+          await cargarProductos();
+          alert('✅ Producto eliminado');
+        }
+      } else {
+        alert('❌ Número inválido');
+      }
+      
+    } else if (opcion === '4') {
+      let lista = '📦 INVENTARIO ACTUAL:\n\n';
+      productos.forEach((p, i) => {
+        lista += `${i+1}. ${p.nombre}\n   Categoría: ${p.categoria}\n   Stock: ${p.stock} | Precio: $${p.precio}\n   Costo: $${p.costo}\n\n`;
+      });
+      alert(lista || '📭 Inventario vacío');
     }
   }
   
   // ========== BÚSQUEDA EN TIEMPO REAL ==========
-  document.getElementById('searchInput').oninput = () => renderizarProductos();
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.oninput = () => renderizarProductos();
+  }
   
   // ========== SERVICE WORKER & INSTALACIÓN ==========
   let deferredPrompt;
@@ -746,19 +925,19 @@
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
+    console.log('✅ PWA instalable detectada');
   });
   
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/MercaditoV4/sw.js').catch(err => console.log('SW Error:', err));
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/MercaditoV4/sw.js')
+        .then(reg => console.log('✅ Service Worker registrado:', reg))
+        .catch(err => console.log('❌ SW Error:', err));
+    });
   }
   
   // ========== INICIALIZACIÓN ==========
   cargarProductos();
-  
-  // Scroll para que el footer no bloquee
-  window.addEventListener('load', () => {
-    document.querySelector('.productos-lista').style.paddingBottom = '300px';
-  });
 </script>
 </body>
 </html>
