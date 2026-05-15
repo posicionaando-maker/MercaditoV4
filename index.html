@@ -22,7 +22,8 @@
     .products { background: white; border-radius: 24px; padding: 1rem; border: 1px solid #bdd4e8; }
     .busqueda-input { width: 100%; padding: 12px 16px; border-radius: 48px; border: 1px solid #cde3f5; margin-bottom: 1rem; }
     .product-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; max-height: 55vh; overflow-y: auto; }
-    .product-card { background: #f9fcff; border: 1px solid #cde3f5; border-radius: 20px; padding: 12px; cursor: pointer; }
+    .product-card { background: #f9fcff; border: 1px solid #cde3f5; border-radius: 20px; padding: 12px; cursor: pointer; transition: all 0.2s; }
+    .product-card:active { transform: scale(0.98); }
     .stock-badge { font-size: 12px; background: #2c6e9e; color: white; padding: 3px 10px; border-radius: 30px; display: inline-block; }
     .low-stock { background: #e67e22; }
     .price { font-size: 1.3rem; font-weight: bold; color: #1e4a76; margin: 8px 0; }
@@ -35,7 +36,7 @@
     .pago-input { width: 130px; padding: 8px; border-radius: 30px; border: 1px solid #bdd4e8; text-align: center; }
     .venta-info { font-size: 0.85rem; padding: 8px; background: #d4e4f5; border-radius: 20px; text-align: center; margin-top: 8px; }
     .cart-buttons { display: flex; gap: 12px; margin-top: 8px; }
-    button { border: none; padding: 10px 16px; border-radius: 48px; cursor: pointer; font-weight: 600; }
+    button { border: none; padding: 10px 16px; border-radius: 48px; cursor: pointer; font-weight: 600; transition: transform 0.1s; }
     button:active { transform: scale(0.97); }
     .btn-success { background: #2c6e9e; color: white; }
     .btn-danger { background: #c0392b; color: white; }
@@ -45,9 +46,9 @@
     table { width: 100%; border-collapse: collapse; }
     th, td { padding: 12px; text-align: left; border-bottom: 1px solid #cde3f5; }
     th { background: #e8f0fe; color: #1e4a76; }
-    .editar-btn { background: #2c6e9e; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; margin-right: 5px; }
-    .ajuste-btn { background: #e67e22; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; }
-    .eliminar-btn { background: #c0392b; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; }
+    .editar-btn { background: #2c6e9e; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; margin-right: 5px; cursor: pointer; }
+    .ajuste-btn { background: #e67e22; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; margin-right: 5px; cursor: pointer; }
+    .eliminar-btn { background: #c0392b; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; }
     .stock-bajo-rojo { background-color: #ffe6e6 !important; color: #c0392b !important; font-weight: bold; }
     .reportes-container { background: white; border-radius: 24px; padding: 1.2rem; border: 1px solid #bdd4e8; }
     .filtros { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 1.5rem; }
@@ -81,12 +82,12 @@
     <button id="btnInstalarApp" class="btn-instalar" style="display:none;">📲 Instalar App</button>
   </div>
 
-  <!-- PANEL VENDER -->
+  <!-- PANEL VENDER (PRINCIPAL) -->
   <div id="venderPanel" class="panel">
     <div class="main-grid">
       <div class="products">
         <input type="text" id="buscar" placeholder="🔍 Buscar producto..." class="busqueda-input">
-        <div id="productList" class="product-list">📂 Sin inventario. Use el menú ☰ para importar.</div>
+        <div id="productList" class="product-list">📂 Cargando inventario...</div>
       </div>
       <div class="cart">
         <h3>🧾 Venta actual</h3>
@@ -146,7 +147,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/idb@8.0.0/build/umd.js"></script>
 <script>
-  // ====================== INDEXEDDB (MEJORADO) ======================
+  // ====================== INDEXEDDB ======================
   const DB_NAME = 'MercaditoPOSDB';
   let dbPromise;
 
@@ -255,21 +256,36 @@
     }
   }
 
-  // ====================== INICIALIZACIÓN ======================
+  // ====================== INICIALIZACIÓN (CORREGIDA) ======================
   document.addEventListener('DOMContentLoaded', async () => {
     await cargarTodo();
     setupEventListeners();
     renderCarrito();
-    cambiarPanel('vender');
+    cambiarPanel('vender'); // Asegurar que VENDER sea el panel principal
   });
 
   function setupEventListeners() {
     const menuDiv = document.getElementById('menuSecundario');
-    document.getElementById('menuIcon').onclick = () => menuDiv.classList.toggle('mostrar');
+    const menuIcon = document.getElementById('menuIcon');
+    
+    // Menú hamburguesa - CORREGIDO
+    if (menuIcon) {
+      menuIcon.onclick = (e) => {
+        e.stopPropagation();
+        menuDiv.classList.toggle('mostrar');
+      };
+    }
+    
+    // Cerrar menú al hacer clic fuera
+    document.addEventListener('click', (e) => {
+      if (menuDiv.classList.contains('mostrar') && !menuDiv.contains(e.target) && e.target !== menuIcon) {
+        menuDiv.classList.remove('mostrar');
+      }
+    });
 
-    // RESGUARDO (exportar inventario)
+    // RESGUARDO
     document.getElementById('btnResguardo').onclick = async () => {
-      const data = { productos: inventario.productos.filter(p => p.cantidad > 0), ventas, exportado: new Date().toISOString() };
+      const data = { productos: inventario.productos, ventas, exportado: new Date().toISOString() };
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -281,7 +297,7 @@
       menuDiv.classList.remove('mostrar');
     };
 
-    // RESTAURAR inventario
+    // RESTAURAR
     document.getElementById('btnRestaurar').onclick = () => {
       const input = document.createElement('input');
       input.type = 'file';
@@ -360,8 +376,14 @@
     const vender = document.getElementById('venderPanel');
     const gestion = document.getElementById('gestionPanel');
     const reportes = document.getElementById('reportesPanel');
-    vender.classList.add('oculto'); gestion.classList.add('oculto'); reportes.classList.add('oculto');
-    if (panel === 'vender') vender.classList.remove('oculto');
+    vender.classList.add('oculto');
+    gestion.classList.add('oculto');
+    reportes.classList.add('oculto');
+    
+    if (panel === 'vender') {
+      vender.classList.remove('oculto');
+      renderProductos(); // Refrescar productos al volver
+    }
     else if (panel === 'gestion') gestion.classList.remove('oculto');
     else if (panel === 'reportes') reportes.classList.remove('oculto');
   }
@@ -373,13 +395,25 @@
     URL.revokeObjectURL(url);
   }
 
-  // ====================== TABLA GESTIÓN (CON ELIMINAR) ======================
+  // ====================== TABLA GESTIÓN ======================
   function renderTablaInventario() {
     const tbody = document.getElementById('tablaBody');
     if (!inventario.productos.length) { tbody.innerHTML = '<tr><td colspan="6">No hay productos</td></tr>'; return; }
     tbody.innerHTML = inventario.productos.map(p => {
       const stockClass = p.cantidad <= 3 ? 'stock-bajo-rojo' : '';
-      return `<tr><td>${p.nombre}</td><td>${p.categoria || 'General'}</td><td>$${p.precioVenta.toFixed(2)}</td><td>$${(p.costo||0).toFixed(2)}</td><td class="${stockClass}">${p.cantidad}</td><td><button class="editar-btn" data-id="${p.id}">✏️ Editar</button><button class="ajuste-btn" data-id="${p.id}">📦 Ajuste</button><button class="eliminar-btn" data-id="${p.id}">🗑 Eliminar</button></td>`}).join('');
+      return `<tr>
+        <td>${p.nombre}</td>
+        <td>${p.categoria || 'General'}</td>
+        <td>$${p.precioVenta.toFixed(2)}</td>
+        <td>$${(p.costo||0).toFixed(2)}</td>
+        <td class="${stockClass}">${p.cantidad}</td>
+        <td>
+          <button class="editar-btn" data-id="${p.id}">✏️ Editar</button>
+          <button class="ajuste-btn" data-id="${p.id}">📦 Ajuste</button>
+          <button class="eliminar-btn" data-id="${p.id}">🗑 Eliminar</button>
+        </td>
+      </tr>`;
+    }).join('');
     
     document.querySelectorAll('.editar-btn').forEach(btn => btn.addEventListener('click', () => abrirModalEditar(parseInt(btn.dataset.id))));
     document.querySelectorAll('.ajuste-btn').forEach(btn => btn.addEventListener('click', () => abrirModalAjuste(parseInt(btn.dataset.id))));
@@ -408,7 +442,8 @@
     prod.cantidad = parseInt(document.getElementById('editStock').value);
     if (isNaN(prod.cantidad)) prod.cantidad = 0;
     await guardarTodo();
-    renderProductos(); renderTablaInventario();
+    renderProductos(); 
+    renderTablaInventario();
     cerrarModalEditar();
     alert('✅ Producto actualizado');
   }
@@ -432,7 +467,8 @@
     prod.cantidad += cantidad;
     if (prod.cantidad < 0) prod.cantidad = 0;
     await guardarTodo();
-    renderProductos(); renderTablaInventario();
+    renderProductos(); 
+    renderTablaInventario();
     cerrarModalAjuste();
     alert(`✅ Stock ajustado. Nuevo stock: ${prod.cantidad}`);
   }
@@ -480,55 +516,127 @@
   // ====================== VENDER ======================
   function renderProductos() {
     const buscar = document.getElementById('buscar').value.toLowerCase();
-    if (!inventario.productos.length) { document.getElementById('productList').innerHTML = '📂 Sin inventario'; return; }
+    if (!inventario.productos.length) { 
+      document.getElementById('productList').innerHTML = '<div>📂 Sin inventario. Use el menú ☰ para importar o agregar productos.</div>'; 
+      return; 
+    }
     const filtrados = inventario.productos.filter(p => p.nombre.toLowerCase().includes(buscar));
-    if (!filtrados.length) { document.getElementById('productList').innerHTML = '<div>📭 No hay productos</div>'; return; }
+    if (!filtrados.length) { 
+      document.getElementById('productList').innerHTML = '<div>📭 No hay productos que coincidan</div>'; 
+      return; 
+    }
     document.getElementById('productList').innerHTML = filtrados.map(p => {
       const stockClass = p.cantidad <= 3 ? 'low-stock' : '';
-      return `<div class="product-card"><strong>${p.nombre}</strong><br><small>${p.categoria||''}</small><div class="price">$${p.precioVenta.toFixed(2)}</div><span class="stock-badge ${stockClass}">📦 Stock: ${p.cantidad}</span>${p.cantidad>0?`<button class="add-btn" data-id="${p.id}" style="margin-top:8px; width:100%; background:#2c6e9e;">➕ Agregar</button>`:'<button disabled style="margin-top:8px;">❌ AGOTADO</button>'}</div>`;
+      return `<div class="product-card">
+        <strong>${p.nombre}</strong><br>
+        <small>${p.categoria||''}</small>
+        <div class="price">$${p.precioVenta.toFixed(2)}</div>
+        <span class="stock-badge ${stockClass}">📦 Stock: ${p.cantidad}</span>
+        ${p.cantidad > 0 ? 
+          `<button class="add-btn" data-id="${p.id}" style="margin-top:8px; width:100%; background:#2c6e9e;">➕ Agregar</button>` : 
+          '<button disabled style="margin-top:8px;">❌ AGOTADO</button>'}
+      </div>`;
     }).join('');
-    document.querySelectorAll('.add-btn').forEach(btn => btn.addEventListener('click', () => agregarAlCarrito(parseInt(btn.dataset.id))));
+    
+    document.querySelectorAll('.add-btn').forEach(btn => btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      agregarAlCarrito(parseInt(btn.dataset.id));
+    }));
   }
   
   function agregarAlCarrito(id) {
     const prod = inventario.productos.find(p => p.id === id);
     if (!prod || prod.cantidad <= 0) return alert('❌ Sin stock');
     const existente = carrito.find(i => i.id === id);
-    if (existente) { if (existente.cantidad+1 > prod.cantidad) return alert(`⚠️ Solo hay ${prod.cantidad} unidades`); existente.cantidad++; }
-    else { carrito.push({ id, nombre: prod.nombre, cantidad: 1, precioUnitario: prod.precioVenta, costoUnitario: prod.costo||0 }); }
+    if (existente) { 
+      if (existente.cantidad + 1 > prod.cantidad) return alert(`⚠️ Solo hay ${prod.cantidad} unidades`); 
+      existente.cantidad++; 
+    } else { 
+      carrito.push({ id, nombre: prod.nombre, cantidad: 1, precioUnitario: prod.precioVenta, costoUnitario: prod.costo||0 }); 
+    }
     renderCarrito();
   }
   
   function renderCarrito() {
-    if (!carrito.length) { document.getElementById('cartItems').innerHTML = '🛒 Carrito vacío'; document.getElementById('totalCarrito').innerText = '0.00'; return; }
+    if (!carrito.length) { 
+      document.getElementById('cartItems').innerHTML = '🛒 Carrito vacío'; 
+      document.getElementById('totalCarrito').innerText = '0.00'; 
+      document.getElementById('finalizarVenta').disabled = true;
+      return; 
+    }
     let html = '', total = 0;
-    carrito.forEach((item, idx) => { const subtotal = item.cantidad * item.precioUnitario; total += subtotal; html += `<div class="cart-item"><span><strong>${item.nombre}</strong> x${item.cantidad}</span><span>$${subtotal.toFixed(2)} <button class="remove-one" data-idx="${idx}" style="background:#e67e22; padding:4px 10px;">-1</button><button class="remove-all" data-idx="${idx}" style="background:#c0392b; padding:4px 10px;">🗑</button></span></div>`; });
+    carrito.forEach((item, idx) => { 
+      const subtotal = item.cantidad * item.precioUnitario; 
+      total += subtotal; 
+      html += `<div class="cart-item">
+        <span><strong>${item.nombre}</strong> x${item.cantidad}</span>
+        <span>$${subtotal.toFixed(2)} 
+          <button class="remove-one" data-idx="${idx}" style="background:#e67e22; padding:4px 10px;">-1</button>
+          <button class="remove-all" data-idx="${idx}" style="background:#c0392b; padding:4px 10px;">🗑</button>
+        </span>
+      </div>`; 
+    });
     document.getElementById('cartItems').innerHTML = html;
     document.getElementById('totalCarrito').innerText = total.toFixed(2);
-    document.querySelectorAll('.remove-one').forEach(btn => btn.onclick = () => { const idx = parseInt(btn.dataset.idx); if (carrito[idx].cantidad > 1) carrito[idx].cantidad--; else carrito.splice(idx,1); renderCarrito(); verificarPagoTransferencia(); });
-    document.querySelectorAll('.remove-all').forEach(btn => btn.onclick = () => { carrito.splice(parseInt(btn.dataset.idx),1); renderCarrito(); verificarPagoTransferencia(); });
+    
+    document.querySelectorAll('.remove-one').forEach(btn => btn.onclick = () => { 
+      const idx = parseInt(btn.dataset.idx); 
+      if (carrito[idx].cantidad > 1) carrito[idx].cantidad--; 
+      else carrito.splice(idx,1); 
+      renderCarrito(); 
+      verificarPagoTransferencia(); 
+    });
+    document.querySelectorAll('.remove-all').forEach(btn => btn.onclick = () => { 
+      carrito.splice(parseInt(btn.dataset.idx),1); 
+      renderCarrito(); 
+      verificarPagoTransferencia(); 
+    });
     verificarPagoTransferencia();
   }
   
   function verificarPagoTransferencia() {
     const total = parseFloat(document.getElementById('totalCarrito').innerText);
     let transferencia = parseFloat(document.getElementById('transferencia').value) || 0;
-    if (transferencia > total) { document.getElementById('restanteMsg').innerHTML = '❌ Transferencia no puede ser mayor al total'; document.getElementById('efectivo').value = ''; document.getElementById('finalizarVenta').disabled = true; return; }
+    if (transferencia > total) { 
+      document.getElementById('restanteMsg').innerHTML = '❌ Transferencia no puede ser mayor al total'; 
+      document.getElementById('efectivo').value = ''; 
+      document.getElementById('finalizarVenta').disabled = true; 
+      return; 
+    }
     const efectivo = total - transferencia;
     document.getElementById('efectivo').value = efectivo.toFixed(2);
-    if (transferencia === total) { document.getElementById('restanteMsg').innerHTML = '✅ Pago completado con transferencia'; document.getElementById('finalizarVenta').disabled = false; }
-    else if (transferencia > 0) { document.getElementById('restanteMsg').innerHTML = `✅ Transfiere: $${transferencia.toFixed(2)} | Efectivo: $${efectivo.toFixed(2)}`; document.getElementById('finalizarVenta').disabled = false; }
-    else if (transferencia === 0 && total > 0) { document.getElementById('restanteMsg').innerHTML = `💵 Pago en efectivo: $${efectivo.toFixed(2)}`; document.getElementById('finalizarVenta').disabled = false; }
-    else { document.getElementById('finalizarVenta').disabled = true; }
+    if (transferencia === total) { 
+      document.getElementById('restanteMsg').innerHTML = '✅ Pago completado con transferencia'; 
+      document.getElementById('finalizarVenta').disabled = false; 
+    } else if (transferencia > 0) { 
+      document.getElementById('restanteMsg').innerHTML = `✅ Transfiere: $${transferencia.toFixed(2)} | Efectivo: $${efectivo.toFixed(2)}`; 
+      document.getElementById('finalizarVenta').disabled = false; 
+    } else if (transferencia === 0 && total > 0) { 
+      document.getElementById('restanteMsg').innerHTML = `💵 Pago en efectivo: $${efectivo.toFixed(2)}`; 
+      document.getElementById('finalizarVenta').disabled = false; 
+    } else { 
+      document.getElementById('finalizarVenta').disabled = true; 
+    }
   }
   
   async function finalizarVenta() {
     const total = parseFloat(document.getElementById('totalCarrito').innerText);
     const transferencia = parseFloat(document.getElementById('transferencia').value) || 0;
     if (total === 0) return alert('No hay productos');
-    for (let item of carrito) { const prod = inventario.productos.find(p => p.id === item.id); if (prod) prod.cantidad -= item.cantidad; }
+    for (let item of carrito) { 
+      const prod = inventario.productos.find(p => p.id === item.id); 
+      if (prod) prod.cantidad -= item.cantidad; 
+    }
     await guardarTodo();
-    const nuevaVenta = { id: Date.now(), fecha: new Date().toISOString(), items: carrito.map(i => ({ id:i.id, nombre:i.nombre, cantidad:i.cantidad, precio:i.precioUnitario, costo:i.costoUnitario })), total, efectivo: total-transferencia, transferencia, ganancia: carrito.reduce((acc,i) => acc + (i.cantidad * (i.precioUnitario - i.costoUnitario)), 0) };
+    const nuevaVenta = { 
+      id: Date.now(), 
+      fecha: new Date().toISOString(), 
+      items: carrito.map(i => ({ id:i.id, nombre:i.nombre, cantidad:i.cantidad, precio:i.precioUnitario, costo:i.costoUnitario })), 
+      total, 
+      efectivo: total-transferencia, 
+      transferencia, 
+      ganancia: carrito.reduce((acc,i) => acc + (i.cantidad * (i.precioUnitario - i.costoUnitario)), 0) 
+    };
     ventas.push(nuevaVenta);
     await guardarVentasDB(ventas);
     alert(`✅ Venta por $${total.toFixed(2)} registrada`);
@@ -537,7 +645,11 @@
     renderTablaInventario();
   }
   
-  function limpiarCarrito() { carrito = []; document.getElementById('transferencia').value = 0; renderCarrito(); }
+  function limpiarCarrito() { 
+    carrito = []; 
+    document.getElementById('transferencia').value = 0; 
+    renderCarrito(); 
+  }
 
   // ====================== REPORTES ======================
   function actualizarReportes() {
@@ -583,7 +695,8 @@
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    document.getElementById('btnInstalarApp').style.display = 'inline-block';
+    const btnInstalar = document.getElementById('btnInstalarApp');
+    if (btnInstalar) btnInstalar.style.display = 'inline-block';
   });
 
   if ('serviceWorker' in navigator) {
