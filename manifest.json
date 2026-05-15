@@ -1,13 +1,12 @@
 {
-  "name": "MercaditoV4",
-  "short_name": "MercV4",
-  "description": "Punto de venta offline",
-  "start_url": "/MercaditoV4/index.html",
+  "name": "Mi Mercadito POS",
+  "short_name": "Mercadito",
+  "description": "Punto de venta offline con gestión de inventario",
+  "start_url": "/MercaditoV4/",
   "display": "standalone",
-  "background_color": "#f5f5f5",
-  "theme_color": "#2c3e50",
+  "background_color": "#f0f7ff",
+  "theme_color": "#1e4a76",
   "orientation": "portrait",
-  "scope": "/MercaditoV4/",
   "icons": [
     {
       "src": "icon-192.png",
