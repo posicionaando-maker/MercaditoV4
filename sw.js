@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mercaditov4-v3';
+const CACHE_NAME = 'mercaditov4-v4';
 const urlsToCache = [
   '/MercaditoV4/',
   '/MercaditoV4/index.html',
