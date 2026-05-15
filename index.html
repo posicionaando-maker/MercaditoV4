@@ -36,7 +36,7 @@
     .header {
       background: linear-gradient(135deg, #2c3e50, #34495e);
       color: white;
-      padding: 16px;
+      padding: 12px 16px;
       display: flex;
       align-items: center;
       gap: 12px;
@@ -56,7 +56,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 2000;
     }
 
     .menu-btn:active {
@@ -64,7 +63,7 @@
     }
 
     .header h1 {
-      font-size: 20px;
+      font-size: 18px;
       flex: 1;
     }
 
@@ -118,7 +117,7 @@
 
     .menu-header h3 {
       margin: 0;
-      font-size: 20px;
+      font-size: 18px;
     }
 
     .menu-item {
@@ -132,33 +131,74 @@
       gap: 12px;
     }
 
-    .menu-item:hover {
-      background: #f0f0f0;
-    }
-
     .menu-item:active {
       background: #e0e0e0;
     }
 
+    /* Formulario de agregar producto */
+    .form-agregar {
+      background: white;
+      padding: 12px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .form-title {
+      font-size: 14px;
+      font-weight: bold;
+      color: #2c3e50;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-fields {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .form-fields input {
+      flex: 1;
+      min-width: 100px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 25px;
+      font-size: 14px;
+    }
+
+    .form-fields input:focus {
+      outline: none;
+      border-color: #3498db;
+    }
+
+    .btn-agregar {
+      background: #27ae60;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn-agregar:active {
+      transform: scale(0.98);
+    }
+
     /* Área de búsqueda */
     .search-area {
-      padding: 16px;
+      padding: 12px;
       background: white;
       border-bottom: 1px solid #e0e0e0;
     }
 
-    .search-box {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
     .search-box input {
-      flex: 1;
-      padding: 12px;
-      border: 2px solid #ddd;
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
       border-radius: 25px;
-      font-size: 16px;
+      font-size: 14px;
     }
 
     .search-box input:focus {
@@ -170,21 +210,17 @@
       display: flex;
       gap: 8px;
       overflow-x: auto;
-      padding: 8px 0;
+      margin-top: 10px;
+      padding-bottom: 4px;
     }
 
     .category-chip {
-      padding: 6px 16px;
+      padding: 6px 14px;
       background: #ecf0f1;
       border-radius: 20px;
       white-space: nowrap;
       cursor: pointer;
-      font-size: 14px;
-      transition: all 0.2s;
-    }
-
-    .category-chip:active {
-      transform: scale(0.95);
+      font-size: 13px;
     }
 
     .category-chip.active {
@@ -196,21 +232,20 @@
     .productos-lista {
       flex: 1;
       overflow-y: auto;
-      padding: 16px;
-      padding-bottom: 320px;
+      padding: 12px;
+      padding-bottom: 300px;
     }
 
     .producto-card {
       background: white;
       border-radius: 12px;
       padding: 12px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
       cursor: pointer;
-      transition: transform 0.1s;
     }
 
     .producto-card:active {
@@ -218,12 +253,12 @@
     }
 
     .producto-info h3 {
-      font-size: 16px;
+      font-size: 15px;
       margin-bottom: 4px;
     }
 
     .producto-info p {
-      font-size: 14px;
+      font-size: 12px;
       color: #7f8c8d;
     }
 
@@ -232,13 +267,13 @@
     }
 
     .precio {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: bold;
       color: #27ae60;
     }
 
     .stock {
-      font-size: 12px;
+      font-size: 11px;
       color: #e74c3c;
     }
 
@@ -254,16 +289,16 @@
       right: 0;
       background: white;
       border-top: 2px solid #e0e0e0;
-      padding: 12px 16px;
+      padding: 12px;
       box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
       z-index: 100;
-      max-height: 320px;
+      max-height: 300px;
       overflow-y: auto;
     }
 
     .carrito-resumen {
-      margin-bottom: 12px;
-      max-height: 150px;
+      margin-bottom: 10px;
+      max-height: 120px;
       overflow-y: auto;
     }
 
@@ -271,8 +306,8 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 8px 0;
-      font-size: 14px;
+      padding: 6px 0;
+      font-size: 13px;
       border-bottom: 1px solid #f0f0f0;
     }
 
@@ -280,16 +315,16 @@
       background: #e74c3c;
       color: white;
       border: none;
-      padding: 4px 12px;
+      padding: 4px 10px;
       border-radius: 20px;
       cursor: pointer;
-      font-size: 12px;
+      font-size: 11px;
     }
 
     .pago-options {
       display: flex;
-      gap: 12px;
-      margin: 12px 0;
+      gap: 10px;
+      margin: 10px 0;
     }
 
     .pago-input {
@@ -297,7 +332,7 @@
     }
 
     .pago-input label {
-      font-size: 12px;
+      font-size: 11px;
       color: #7f8c8d;
       display: block;
       margin-bottom: 4px;
@@ -305,7 +340,7 @@
 
     .pago-input input {
       width: 100%;
-      padding: 10px;
+      padding: 8px;
       border: 1px solid #ddd;
       border-radius: 8px;
       font-size: 14px;
@@ -314,11 +349,11 @@
     .total-pago {
       display: flex;
       justify-content: space-between;
-      margin: 12px 0;
-      padding: 12px 0;
+      margin: 10px 0;
+      padding: 8px 0;
       border-top: 1px solid #e0e0e0;
       font-weight: bold;
-      font-size: 16px;
+      font-size: 14px;
     }
 
     .btn-finalizar {
@@ -326,28 +361,15 @@
       background: #27ae60;
       color: white;
       border: none;
-      padding: 14px;
+      padding: 12px;
       border-radius: 25px;
-      font-size: 16px;
+      font-size: 14px;
       font-weight: bold;
       cursor: pointer;
     }
 
     .btn-finalizar:active {
       transform: scale(0.98);
-    }
-
-    /* Scrollbar */
-    ::-webkit-scrollbar {
-      width: 4px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: #f1f1f1;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: #888;
     }
   </style>
 </head>
@@ -366,20 +388,24 @@
     <div class="menu-header">
       <h3>📋 Menú Principal</h3>
     </div>
-    <div class="menu-item" id="menuInventario">
-      📦 Gestionar Inventario
+    <div class="menu-item" id="menuResguardo">💾 Resguardo (Guardar JSON)</div>
+    <div class="menu-item" id="menuRestaurar">📂 Restaurar inventario</div>
+    <div class="menu-item" id="menuReportes">📊 Ver Reportes</div>
+    <div class="menu-item" id="menuInstalar">📲 Instalar App</div>
+  </div>
+
+  <!-- FORMULARIO PARA AGREGAR PRODUCTOS (SIEMPRE VISIBLE) -->
+  <div class="form-agregar">
+    <div class="form-title">
+      <span>➕ AGREGAR NUEVO PRODUCTO</span>
     </div>
-    <div class="menu-item" id="menuResguardo">
-      💾 Resguardo (Guardar)
-    </div>
-    <div class="menu-item" id="menuRestaurar">
-      📂 Restaurar inventario
-    </div>
-    <div class="menu-item" id="menuReportes">
-      📊 Ver Reportes
-    </div>
-    <div class="menu-item" id="menuInstalar">
-      📲 Instalar App
+    <div class="form-fields">
+      <input type="text" id="nuevoNombre" placeholder="Nombre">
+      <input type="text" id="nuevaCategoria" placeholder="Categoría" value="General">
+      <input type="number" id="nuevoPrecio" placeholder="Precio">
+      <input type="number" id="nuevoCosto" placeholder="Costo" value="0">
+      <input type="number" id="nuevoStock" placeholder="Stock" value="0">
+      <button class="btn-agregar" id="btnAgregarProducto">➕ Agregar</button>
     </div>
   </div>
 
@@ -391,7 +417,7 @@
     <div class="category-filter" id="categoryFilter"></div>
   </div>
 
-  <!-- Lista de productos -->
+  <!-- Lista de productos (inventario) -->
   <div class="productos-lista" id="productosLista"></div>
 
   <!-- Footer del carrito -->
@@ -500,86 +526,35 @@
   let carrito = [];
   let categoriaActual = 'Todos';
 
-  // ========== MENÚ HAMBURGUESA (CORREGIDO) ==========
+  // ========== MENÚ HAMBURGUESA ==========
   function toggleMenu() {
     const menu = document.getElementById('menuLateral');
     const overlay = document.getElementById('menuOverlay');
-    
-    if (menu.classList.contains('show')) {
-      menu.classList.remove('show');
-      overlay.classList.remove('show');
-    } else {
-      menu.classList.add('show');
-      overlay.classList.add('show');
-    }
+    menu.classList.toggle('show');
+    overlay.classList.toggle('show');
   }
 
-  // Event listeners con verificación de existencia
-  document.addEventListener('DOMContentLoaded', () => {
-    const menuBtn = document.getElementById('menuBtn');
-    const menuOverlay = document.getElementById('menuOverlay');
-    
-    if (menuBtn) {
-      menuBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        toggleMenu();
-      });
-    }
-    
-    if (menuOverlay) {
-      menuOverlay.addEventListener('click', toggleMenu);
-    }
-    
-    // Acciones del menú
-    document.getElementById('menuInventario').addEventListener('click', () => {
-      toggleMenu();
-      gestionInventario();
-    });
-    
-    document.getElementById('menuResguardo').addEventListener('click', async () => {
-      toggleMenu();
-      await resguardo();
-    });
-    
-    document.getElementById('menuRestaurar').addEventListener('click', () => {
-      toggleMenu();
-      restaurarInventario();
-    });
-    
-    document.getElementById('menuReportes').addEventListener('click', async () => {
-      toggleMenu();
-      await mostrarReportes();
-    });
-    
-    document.getElementById('menuInstalar').addEventListener('click', () => {
-      toggleMenu();
-      instalarApp();
-    });
-  });
+  document.getElementById('menuBtn').onclick = toggleMenu;
+  document.getElementById('menuOverlay').onclick = toggleMenu;
 
   // ========== FUNCIONES DEL MENÚ ==========
-  async function resguardo() {
+  document.getElementById('menuResguardo').onclick = async () => {
+    toggleMenu();
     const inventario = await leerInventario();
     const ventas = await leerVentas();
-    const data = { 
-      inventario, 
-      ventas, 
-      exportado: new Date().toISOString(),
-      version: 'MercaditoV4'
-    };
+    const data = { inventario, ventas, exportado: new Date().toISOString() };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `resguardo_mercaditov4_${Date.now()}.json`;
-    document.body.appendChild(a);
+    a.download = `resguardo_${Date.now()}.json`;
     a.click();
-    document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    alert('✅ Resguardo guardado en Downloads');
-  }
+    alert('✅ Resguardo guardado');
+  };
 
-  function restaurarInventario() {
+  document.getElementById('menuRestaurar').onclick = () => {
+    toggleMenu();
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = '.json';
@@ -588,42 +563,81 @@
       if (!file) return;
       const text = await file.text();
       const data = JSON.parse(text);
-      if (data.inventario && Array.isArray(data.inventario)) {
+      if (data.inventario) {
         await guardarInventario(data.inventario);
         await cargarProductos();
-        alert('✅ Inventario restaurado exitosamente');
-      } else {
-        alert('❌ Archivo inválido');
+        alert('✅ Inventario restaurado');
       }
     };
     input.click();
-  }
+  };
 
-  async function mostrarReportes() {
+  document.getElementById('menuReportes').onclick = async () => {
+    toggleMenu();
     const ventas = await leerVentas();
-    const totalVentas = ventas.reduce((sum, v) => sum + v.total, 0);
-    alert(`📊 REPORTES\n\n💰 Total General: $${totalVentas.toFixed(2)}\n📦 Total Ventas: ${ventas.length}\n🛒 Productos: ${productos.length}`);
-  }
+    const total = ventas.reduce((sum, v) => sum + v.total, 0);
+    alert(`📊 REPORTES\n💰 Total General: $${total.toFixed(2)}\n📦 Ventas: ${ventas.length}\n🛒 Productos: ${productos.length}`);
+  };
 
-  function instalarApp() {
+  document.getElementById('menuInstalar').onclick = () => {
+    toggleMenu();
     if (deferredPrompt) {
       deferredPrompt.prompt();
     } else {
-      alert('📲 Para instalar: Abre el menú del navegador (⋮) → "Instalar aplicación"');
+      alert('📲 Usa el menú del navegador → "Instalar aplicación"');
     }
+  };
+
+  // ========== AGREGAR PRODUCTO (FORMULARIO) ==========
+  async function agregarProductoFormulario() {
+    const nombre = document.getElementById('nuevoNombre').value.trim();
+    const categoria = document.getElementById('nuevaCategoria').value.trim() || 'General';
+    const precio = parseFloat(document.getElementById('nuevoPrecio').value);
+    const costo = parseFloat(document.getElementById('nuevoCosto').value) || 0;
+    const stock = parseInt(document.getElementById('nuevoStock').value) || 0;
+
+    if (!nombre) {
+      alert('❌ Escribe el nombre del producto');
+      return;
+    }
+    if (isNaN(precio) || precio <= 0) {
+      alert('❌ Precio inválido');
+      return;
+    }
+
+    const nuevo = {
+      id: Date.now().toString(),
+      nombre: nombre,
+      categoria: categoria,
+      precio: precio,
+      costo: costo,
+      stock: stock
+    };
+
+    await agregarProductoDB(nuevo);
+    
+    // Limpiar formulario
+    document.getElementById('nuevoNombre').value = '';
+    document.getElementById('nuevoPrecio').value = '';
+    document.getElementById('nuevoStock').value = '0';
+    
+    await cargarProductos();
+    alert(`✅ "${nombre}" agregado al inventario`);
   }
 
-  // ========== CARGAR Y RENDERIZAR PRODUCTOS ==========
+  document.getElementById('btnAgregarProducto').onclick = agregarProductoFormulario;
+
+  // ========== CARGAR Y RENDERIZAR INVENTARIO ==========
   async function cargarProductos() {
     productos = await leerInventario();
     if (productos.length === 0) {
-      // Productos demo
+      // Productos de ejemplo
       productos = [
-        { id: '1', nombre: 'Coca Cola', categoria: 'Bebidas', precio: 15, costo: 10, stock: 10 },
-        { id: '2', nombre: 'Papas Fritas', categoria: 'Snacks', precio: 12, costo: 7, stock: 3 },
-        { id: '3', nombre: 'Sandwich', categoria: 'Comidas', precio: 35, costo: 20, stock: 5 },
+        { id: '1', nombre: 'Coca Cola 600ml', categoria: 'Bebidas', precio: 18, costo: 12, stock: 10 },
+        { id: '2', nombre: 'Papas Fritas', categoria: 'Snacks', precio: 15, costo: 8, stock: 3 },
+        { id: '3', nombre: 'Sandwich Pollo', categoria: 'Comidas', precio: 35, costo: 20, stock: 5 },
         { id: '4', nombre: 'Agua Mineral', categoria: 'Bebidas', precio: 10, costo: 5, stock: 8 },
-        { id: '5', nombre: 'Galletas', categoria: 'Snacks', precio: 8, costo: 4, stock: 2 }
+        { id: '5', nombre: 'Galletas Oreo', categoria: 'Snacks', precio: 12, costo: 6, stock: 2 }
       ];
       await guardarInventario(productos);
     }
@@ -633,7 +647,7 @@
 
   function renderizarProductos() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    let filtrados = productos;
+    let filtrados = [...productos];
     
     if (categoriaActual !== 'Todos') {
       filtrados = filtrados.filter(p => p.categoria === categoriaActual);
@@ -644,8 +658,6 @@
     }
     
     const container = document.getElementById('productosLista');
-    if (!container) return;
-    
     container.innerHTML = '';
     
     if (filtrados.length === 0) {
@@ -676,8 +688,6 @@
   function renderizarCategorias() {
     const categorias = ['Todos', ...new Set(productos.map(p => p.categoria))];
     const container = document.getElementById('categoryFilter');
-    if (!container) return;
-    
     container.innerHTML = categorias.map(cat => `
       <div class="category-chip ${cat === categoriaActual ? 'active' : ''}" data-cat="${cat}">
         ${cat}
@@ -722,7 +732,7 @@
     let total = 0;
     
     if (carrito.length === 0) {
-      if (container) container.innerHTML = '<div style="text-align:center;color:#999;padding:8px;">🛒 Carrito vacío</div>';
+      container.innerHTML = '<div style="text-align:center;color:#999;padding:8px;">🛒 Carrito vacío</div>';
       document.getElementById('carritoFooter').style.display = 'none';
       document.getElementById('cartCount').innerText = '0';
       return;
@@ -741,13 +751,9 @@
       `;
     });
     
-    if (container) container.innerHTML = html;
-    const totalPagarSpan = document.getElementById('totalPagar');
-    if (totalPagarSpan) {
-      totalPagarSpan.innerText = `$${total.toFixed(2)}`;
-      totalPagarSpan.dataset.total = total;
-    }
-    
+    container.innerHTML = html;
+    document.getElementById('totalPagar').innerText = `$${total.toFixed(2)}`;
+    document.getElementById('totalPagar').dataset.total = total;
     actualizarEfectivo();
   }
   
@@ -758,17 +764,13 @@
   };
   
   function actualizarEfectivo() {
-    const totalSpan = document.getElementById('totalPagar');
-    const total = parseFloat(totalSpan?.dataset.total || 0);
-    const transferido = parseFloat(document.getElementById('transferido')?.value || 0);
+    const total = parseFloat(document.getElementById('totalPagar').dataset.total || 0);
+    const transferido = parseFloat(document.getElementById('transferido').value || 0);
     const efectivo = Math.max(0, total - transferido);
-    const efectivoInput = document.getElementById('efectivo');
-    if (efectivoInput) efectivoInput.value = efectivo.toFixed(2);
+    document.getElementById('efectivo').value = efectivo.toFixed(2);
   }
   
-  if (document.getElementById('transferido')) {
-    document.getElementById('transferido').oninput = actualizarEfectivo;
-  }
+  document.getElementById('transferido').oninput = actualizarEfectivo;
   
   async function finalizarVenta() {
     if (carrito.length === 0) {
@@ -776,13 +778,12 @@
       return;
     }
     
-    const totalSpan = document.getElementById('totalPagar');
-    const total = parseFloat(totalSpan?.dataset.total || 0);
-    const transferido = parseFloat(document.getElementById('transferido')?.value || 0);
-    const efectivo = parseFloat(document.getElementById('efectivo')?.value || 0);
+    const total = parseFloat(document.getElementById('totalPagar').dataset.total || 0);
+    const transferido = parseFloat(document.getElementById('transferido').value || 0);
+    const efectivo = parseFloat(document.getElementById('efectivo').value || 0);
     
     if (Math.abs((transferido + efectivo) - total) > 0.01) {
-      alert(`❌ Error: El total pagado ($${(transferido + efectivo).toFixed(2)}) no coincide con el total ($${total.toFixed(2)})`);
+      alert(`❌ El total pagado ($${(transferido + efectivo).toFixed(2)}) no coincide con $${total.toFixed(2)}`);
       return;
     }
     
@@ -796,147 +797,39 @@
     }
     
     // Guardar venta
-    const venta = {
-      items: carrito.map(i => ({ id: i.id, nombre: i.nombre, cantidad: i.cantidad, precio: i.precio })),
+    await guardarVenta({
+      items: carrito.map(i => ({ nombre: i.nombre, cantidad: i.cantidad, precio: i.precio })),
       total: total,
       transferido: transferido,
       efectivo: efectivo,
       fecha: new Date().toISOString()
-    };
-    
-    await guardarVenta(venta);
+    });
     
     // Resetear
     carrito = [];
     renderizarCarrito();
     await cargarProductos();
-    alert('✅ Venta completada exitosamente');
-    
-    if (document.getElementById('transferido')) document.getElementById('transferido').value = '0';
+    alert('✅ Venta completada');
+    document.getElementById('transferido').value = '0';
   }
   
-  if (document.getElementById('finalizarVentaBtn')) {
-    document.getElementById('finalizarVentaBtn').onclick = finalizarVenta;
-  }
+  document.getElementById('finalizarVentaBtn').onclick = finalizarVenta;
   
-  // ========== GESTIÓN DE INVENTARIO ==========
-  async function gestionInventario() {
-    let opcion = prompt(
-      '📦 GESTIÓN DE INVENTARIO\n\n' +
-      '1️⃣ Agregar producto\n' +
-      '2️⃣ Editar producto\n' +
-      '3️⃣ Eliminar producto\n' +
-      '4️⃣ Ver inventario\n\n' +
-      'Elige una opción (1-4):'
-    );
-    
-    if (opcion === '1') {
-      const nombre = prompt('📝 Nombre del producto:');
-      if (!nombre) return;
-      const categoria = prompt('📂 Categoría:', 'General');
-      const precio = parseFloat(prompt('💰 Precio de venta:'));
-      const costo = parseFloat(prompt('💵 Costo del producto:', 0));
-      const stock = parseInt(prompt('📦 Stock inicial:', 0));
-      
-      if (isNaN(precio)) {
-        alert('❌ Precio inválido');
-        return;
-      }
-      
-      const nuevo = {
-        id: Date.now().toString(),
-        nombre: nombre.trim(),
-        categoria: categoria || 'General',
-        precio: precio,
-        costo: costo || 0,
-        stock: stock || 0
-      };
-      
-      await agregarProductoDB(nuevo);
-      await cargarProductos();
-      alert(`✅ Producto "${nombre}" agregado`);
-      
-    } else if (opcion === '2') {
-      if (productos.length === 0) {
-        alert('📭 No hay productos para editar');
-        return;
-      }
-      
-      let lista = '📋 SELECCIONA PRODUCTO:\n\n';
-      productos.forEach((p, i) => {
-        lista += `${i+1}. ${p.nombre} - Stock: ${p.stock} - $${p.precio}\n`;
-      });
-      
-      const idx = parseInt(prompt(lista + '\n\nNúmero del producto:')) - 1;
-      if (idx >= 0 && idx < productos.length) {
-        const prod = productos[idx];
-        const nuevoStock = parseInt(prompt(`✏️ Nuevo stock para "${prod.nombre}":`, prod.stock));
-        if (!isNaN(nuevoStock)) {
-          prod.stock = nuevoStock;
-          await actualizarProductoDB(prod);
-          await cargarProductos();
-          alert('✅ Stock actualizado');
-        }
-      } else {
-        alert('❌ Número inválido');
-      }
-      
-    } else if (opcion === '3') {
-      if (productos.length === 0) {
-        alert('📭 No hay productos para eliminar');
-        return;
-      }
-      
-      let lista = '🗑️ ELIMINAR PRODUCTO:\n\n';
-      productos.forEach((p, i) => {
-        lista += `${i+1}. ${p.nombre}\n`;
-      });
-      
-      const idx = parseInt(prompt(lista + '\n\nNúmero del producto a eliminar:')) - 1;
-      if (idx >= 0 && idx < productos.length) {
-        const prod = productos[idx];
-        if (confirm(`¿Eliminar "${prod.nombre}" permanentemente?`)) {
-          await eliminarProductoDB(prod.id);
-          await cargarProductos();
-          alert('✅ Producto eliminado');
-        }
-      } else {
-        alert('❌ Número inválido');
-      }
-      
-    } else if (opcion === '4') {
-      let lista = '📦 INVENTARIO ACTUAL:\n\n';
-      productos.forEach((p, i) => {
-        lista += `${i+1}. ${p.nombre}\n   Categoría: ${p.categoria}\n   Stock: ${p.stock} | Precio: $${p.precio}\n   Costo: $${p.costo}\n\n`;
-      });
-      alert(lista || '📭 Inventario vacío');
-    }
-  }
+  // ========== BÚSQUEDA ==========
+  document.getElementById('searchInput').oninput = () => renderizarProductos();
   
-  // ========== BÚSQUEDA EN TIEMPO REAL ==========
-  const searchInput = document.getElementById('searchInput');
-  if (searchInput) {
-    searchInput.oninput = () => renderizarProductos();
-  }
-  
-  // ========== SERVICE WORKER & INSTALACIÓN ==========
+  // ========== SERVICE WORKER ==========
   let deferredPrompt;
-  
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    console.log('✅ PWA instalable detectada');
   });
   
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/MercaditoV4/sw.js')
-        .then(reg => console.log('✅ Service Worker registrado:', reg))
-        .catch(err => console.log('❌ SW Error:', err));
-    });
+    navigator.serviceWorker.register('/MercaditoV4/sw.js');
   }
   
-  // ========== INICIALIZACIÓN ==========
+  // ========== INICIALIZAR ==========
   cargarProductos();
 </script>
 </body>
