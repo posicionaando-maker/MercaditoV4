@@ -42,6 +42,7 @@
       gap: 12px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       z-index: 10;
+      flex-shrink: 0;
     }
 
     .menu-btn {
@@ -140,6 +141,7 @@
       background: white;
       padding: 12px;
       border-bottom: 1px solid #e0e0e0;
+      flex-shrink: 0;
     }
 
     .form-title {
@@ -191,6 +193,7 @@
       padding: 12px;
       background: white;
       border-bottom: 1px solid #e0e0e0;
+      flex-shrink: 0;
     }
 
     .search-box input {
@@ -228,12 +231,12 @@
       color: white;
     }
 
-    /* Lista de productos */
+    /* Lista de productos (inventario) */
     .productos-lista {
       flex: 1;
       overflow-y: auto;
       padding: 12px;
-      padding-bottom: 300px;
+      min-height: 200px;
     }
 
     .producto-card {
@@ -246,6 +249,7 @@
       align-items: center;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
       cursor: pointer;
+      transition: all 0.2s;
     }
 
     .producto-card:active {
@@ -281,19 +285,21 @@
       color: #27ae60;
     }
 
-    /* Footer del carrito */
+    .stock-rojo {
+      color: #ff0000 !important;
+      font-weight: bold;
+    }
+
+    /* Footer del carrito (SIEMPRE VISIBLE) */
     .carrito-footer {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
       background: white;
       border-top: 2px solid #e0e0e0;
       padding: 12px;
       box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
       z-index: 100;
-      max-height: 300px;
+      max-height: 280px;
       overflow-y: auto;
+      flex-shrink: 0;
     }
 
     .carrito-resumen {
@@ -371,6 +377,12 @@
     .btn-finalizar:active {
       transform: scale(0.98);
     }
+
+    .mensaje-stock {
+      text-align: center;
+      padding: 20px;
+      color: #999;
+    }
   </style>
 </head>
 <body>
@@ -394,11 +406,9 @@
     <div class="menu-item" id="menuInstalar">📲 Instalar App</div>
   </div>
 
-  <!-- FORMULARIO PARA AGREGAR PRODUCTOS (SIEMPRE VISIBLE) -->
+  <!-- FORMULARIO PARA AGREGAR PRODUCTOS -->
   <div class="form-agregar">
-    <div class="form-title">
-      <span>➕ AGREGAR NUEVO PRODUCTO</span>
-    </div>
+    <div class="form-title">➕ AGREGAR NUEVO PRODUCTO</div>
     <div class="form-fields">
       <input type="text" id="nuevoNombre" placeholder="Nombre">
       <input type="text" id="nuevaCategoria" placeholder="Categoría" value="General">
@@ -417,12 +427,14 @@
     <div class="category-filter" id="categoryFilter"></div>
   </div>
 
-  <!-- Lista de productos (inventario) -->
+  <!-- Lista de productos (INVENTARIO) -->
   <div class="productos-lista" id="productosLista"></div>
 
-  <!-- Footer del carrito -->
-  <div class="carrito-footer" id="carritoFooter" style="display: none;">
-    <div class="carrito-resumen" id="carritoItems"></div>
+  <!-- Footer del carrito (SIEMPRE VISIBLE) -->
+  <div class="carrito-footer" id="carritoFooter">
+    <div class="carrito-resumen" id="carritoItems">
+      <div style="text-align:center;color:#999;padding:8px;">🛒 Carrito vacío</div>
+    </div>
     
     <div class="pago-options">
       <div class="pago-input">
@@ -501,13 +513,6 @@
     await tx.done;
   }
 
-  async function eliminarProductoDB(id) {
-    const db = await getDB();
-    const tx = db.transaction('inventario', 'readwrite');
-    await tx.objectStore('inventario').delete(id);
-    await tx.done;
-  }
-
   async function guardarVenta(venta) {
     const db = await getDB();
     const tx = db.transaction('ventas', 'readwrite');
@@ -550,7 +555,7 @@
     a.download = `resguardo_${Date.now()}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    alert('✅ Resguardo guardado');
+    alert('✅ Resguardo guardado en Downloads');
   };
 
   document.getElementById('menuRestaurar').onclick = () => {
@@ -576,7 +581,7 @@
     toggleMenu();
     const ventas = await leerVentas();
     const total = ventas.reduce((sum, v) => sum + v.total, 0);
-    alert(`📊 REPORTES\n💰 Total General: $${total.toFixed(2)}\n📦 Ventas: ${ventas.length}\n🛒 Productos: ${productos.length}`);
+    alert(`📊 REPORTES\n💰 Total General: $${total.toFixed(2)}\n📦 Ventas realizadas: ${ventas.length}\n🛒 Productos en inventario: ${productos.length}`);
   };
 
   document.getElementById('menuInstalar').onclick = () => {
@@ -584,7 +589,7 @@
     if (deferredPrompt) {
       deferredPrompt.prompt();
     } else {
-      alert('📲 Usa el menú del navegador → "Instalar aplicación"');
+      alert('📲 Para instalar: Abre el menú del navegador (⋮) → "Instalar aplicación"');
     }
   };
 
@@ -621,6 +626,7 @@
     document.getElementById('nuevoPrecio').value = '';
     document.getElementById('nuevoStock').value = '0';
     
+    // Recargar inventario
     await cargarProductos();
     alert(`✅ "${nombre}" agregado al inventario`);
   }
@@ -661,7 +667,7 @@
     container.innerHTML = '';
     
     if (filtrados.length === 0) {
-      container.innerHTML = '<div style="text-align:center;padding:40px;color:#999;">📭 No hay productos</div>';
+      container.innerHTML = '<div class="mensaje-stock">📭 No hay productos</div>';
       return;
     }
     
@@ -670,6 +676,9 @@
       card.className = 'producto-card';
       card.onclick = () => agregarAlCarrito(prod);
       
+      // Determinar clase del stock
+      const stockClass = prod.stock < 5 ? 'stock-rojo' : (prod.stock > 0 ? 'suficiente' : '');
+      
       card.innerHTML = `
         <div class="producto-info">
           <h3>${prod.nombre}</h3>
@@ -677,7 +686,7 @@
         </div>
         <div class="precio-stock">
           <div class="precio">$${prod.precio.toFixed(2)}</div>
-          <div class="stock ${prod.stock > 0 ? 'suficiente' : ''}">📦 ${prod.stock} uds</div>
+          <div class="stock ${stockClass}">📦 ${prod.stock} uds</div>
         </div>
       `;
       
@@ -719,12 +728,16 @@
         return;
       }
     } else {
-      carrito.push({ ...prod, cantidad: 1 });
+      carrito.push({ 
+        id: prod.id, 
+        nombre: prod.nombre, 
+        precio: prod.precio, 
+        cantidad: 1 
+      });
     }
     
     renderizarCarrito();
     document.getElementById('cartCount').innerText = carrito.length;
-    document.getElementById('carritoFooter').style.display = 'block';
   }
 
   function renderizarCarrito() {
@@ -733,8 +746,11 @@
     
     if (carrito.length === 0) {
       container.innerHTML = '<div style="text-align:center;color:#999;padding:8px;">🛒 Carrito vacío</div>';
-      document.getElementById('carritoFooter').style.display = 'none';
       document.getElementById('cartCount').innerText = '0';
+      document.getElementById('totalPagar').innerText = '$0.00';
+      document.getElementById('totalPagar').dataset.total = '0';
+      document.getElementById('transferido').value = '0';
+      document.getElementById('efectivo').value = '0';
       return;
     }
     
@@ -783,11 +799,11 @@
     const efectivo = parseFloat(document.getElementById('efectivo').value || 0);
     
     if (Math.abs((transferido + efectivo) - total) > 0.01) {
-      alert(`❌ El total pagado ($${(transferido + efectivo).toFixed(2)}) no coincide con $${total.toFixed(2)}`);
+      alert(`❌ Error: El total pagado ($${(transferido + efectivo).toFixed(2)}) no coincide con $${total.toFixed(2)}`);
       return;
     }
     
-    // Descontar stock
+    // Descontar stock de cada producto
     for (let item of carrito) {
       const prod = productos.find(p => p.id === item.id);
       if (prod) {
@@ -805,31 +821,37 @@
       fecha: new Date().toISOString()
     });
     
-    // Resetear
+    // Resetear carrito
     carrito = [];
     renderizarCarrito();
+    
+    // RECARGAR INVENTARIO (para mostrar stocks actualizados)
     await cargarProductos();
-    alert('✅ Venta completada');
+    
+    alert('✅ Venta completada exitosamente');
     document.getElementById('transferido').value = '0';
   }
   
   document.getElementById('finalizarVentaBtn').onclick = finalizarVenta;
   
-  // ========== BÚSQUEDA ==========
+  // ========== BÚSQUEDA EN TIEMPO REAL ==========
   document.getElementById('searchInput').oninput = () => renderizarProductos();
   
-  // ========== SERVICE WORKER ==========
+  // ========== SERVICE WORKER E INSTALACIÓN ==========
   let deferredPrompt;
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
+    console.log('✅ PWA lista para instalar');
   });
   
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/MercaditoV4/sw.js');
+    navigator.serviceWorker.register('/MercaditoV4/sw.js')
+      .then(reg => console.log('✅ Service Worker registrado'))
+      .catch(err => console.log('❌ SW Error:', err));
   }
   
-  // ========== INICIALIZAR ==========
+  // ========== INICIALIZACIÓN ==========
   cargarProductos();
 </script>
 </body>
